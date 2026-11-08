@@ -17,8 +17,9 @@ docker compose up --build
 ```
 
 Buka http://localhost:8000. Migrasi dan akun demo dibuat otomatis pada startup
-pertama, dan data disimpan di volume Docker `portal-data`. Login Admin
-`dosenpbkk@its.ac.id` / `password`; login Staf `staf@its.ac.id` / `password`.
+pertama, dan data disimpan di volume Docker `portal-data`. Login Admin tersedia
+di http://localhost:8000/admin/login dengan akun `dosenpbkk@its.ac.id` / `password`.
+Staf login melalui http://localhost:8000/login dengan akun `staf@its.ac.id` / `password`.
 Untuk menghentikan server tekan `Ctrl+C`; jalankan kembali perintah yang sama
 untuk melanjutkan dengan database yang tersimpan. Hapus volume dengan
 `docker compose down -v` jika ingin menghapus seluruh data demo.
@@ -103,7 +104,7 @@ Login demo: `dosenpbkk@its.ac.id` / `password`.
 php artisan db:health
 ```
 
-Memeriksa latensi koneksi, versi MySQL, keberadaan tabel, jumlah
+Memeriksa latensi koneksi, versi database, keberadaan tabel, jumlah
 users/projects, project yatim (harus 0), distribusi `tema_agent`,
 kehadiran akun demo, dan kelengkapan seeding (16 users, 32+ projects).
 
