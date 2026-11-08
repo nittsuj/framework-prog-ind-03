@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 /**
  * Seeder utama portal akademik.
@@ -20,8 +21,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminRole = Role::firstOrCreate(['name' => 'Admin', 'guard_name' => 'web']);
+        $staffRole = Role::firstOrCreate(['name' => 'Staf', 'guard_name' => 'web']);
+
         // 15 user acak x 2 project = 30 project dummy.
-        User::factory(15)->has(Project::factory(2))->create();
+        // Idempoten: hanya buat sisa user acak yang belum ada saat seeder
+        // dijalankan ulang, sehingga data tidak terduplikasi.
+        $demoEmails = ['dosenpbkk@its.ac.id', 'staf@its.ac.id'];
+        $randomUserCount = User::query()->whereNotIn('email', $demoEmails)->count();
+
+        if ($randomUserCount < 15) {
+            User::factory(15 - $randomUserCount)
+                ->has(Project::factory(2))
+                ->create();
+        }
 
         // Akun demo siap presentasi (idempoten agar re-seed aman).
         $demo = User::firstOrCreate(
@@ -56,6 +69,18 @@ class DatabaseSeeder extends Seeder
                     'api_key_secure' => 'sk-demo-evaluasi-003',
                 ],
             ]);
+        }
+        $demo->assignRole($adminRole);
+
+        $staff = User::firstOrCreate(
+            ['email' => 'staf@its.ac.id'],
+            ['name' => 'Staf Akademik', 'password' => Hash::make('password'), 'email_verified_at' => now()]
+        );
+        $staff->assignRole($staffRole);
+        if ($staff->projects()->count() === 0) {
+            // saveMany (bukan createMany + toArray) agar atribut yang ada di
+            // $hidden seperti api_key_secure tidak hilang dari payload insert.
+            $staff->projects()->saveMany(Project::factory(3)->make());
         }
     }
 }
