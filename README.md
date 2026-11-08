@@ -7,6 +7,24 @@ diwujudkan sebagai **Agent Monitoring Database Health** (read-only).
 
 ## Cara jalan cepat (oneshot)
 
+### Dengan Docker (tanpa PHP/Composer/MySQL/Node di laptop)
+
+Pastikan Docker Engine dan Docker Compose plugin tersedia, lalu jalankan dari
+folder proyek:
+
+```bash
+docker compose up --build
+```
+
+Buka http://localhost:8000. Migrasi dan akun demo dibuat otomatis pada startup
+pertama, dan data disimpan di volume Docker `portal-data`. Login Admin
+`dosenpbkk@its.ac.id` / `password`; login Staf `staf@its.ac.id` / `password`.
+Untuk menghentikan server tekan `Ctrl+C`; jalankan kembali perintah yang sama
+untuk melanjutkan dengan database yang tersimpan. Hapus volume dengan
+`docker compose down -v` jika ingin menghapus seluruh data demo.
+
+Cara lokal di bawah ini tetap membutuhkan PHP, Composer, dan MySQL.
+
 Cukup **satu perintah** — database dibuat + di-seed otomatis saat aplikasi boot:
 
 ```bash

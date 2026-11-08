@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:80"
+    volumes:
+      - portal-data:/var/lib/portal
+    restart: unless-stopped
+
+volumes:
+  portal-data:
