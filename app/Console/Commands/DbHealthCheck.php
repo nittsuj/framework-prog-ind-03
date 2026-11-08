@@ -24,7 +24,7 @@ class DbHealthCheck extends Command
      *
      * @var string
      */
-    protected $description = 'Tampilkan laporan kesehatan database MySQL (Agentic AI monitor)';
+    protected $description = 'Tampilkan laporan kesehatan database (Agentic AI monitor)';
 
     /**
      * Jalankan pemeriksaan kesehatan.

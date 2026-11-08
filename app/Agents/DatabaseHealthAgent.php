@@ -30,7 +30,15 @@ class DatabaseHealthAgent
         $version = null;
 
         try {
-            $versionRow = DB::selectOne('SELECT VERSION() AS version');
+            // Versi database diambil dengan sintaks yang sesuai driver aktif.
+            // Docker memakai SQLite, sedangkan target lokal PRD memakai MySQL.
+            $versionSql = match (DB::getDriverName()) {
+                'sqlite' => 'SELECT sqlite_version() AS version',
+                'pgsql' => 'SELECT version() AS version',
+                'sqlsrv' => 'SELECT @@VERSION AS version',
+                default => 'SELECT VERSION() AS version',
+            };
+            $versionRow = DB::selectOne($versionSql);
             $version = $versionRow->version ?? null;
             $connectionOk = true;
         } catch (Throwable $e) {
@@ -91,7 +99,7 @@ class DatabaseHealthAgent
         }
 
         if ($latencyMs > 1000) {
-            $issues[] = "Latensi query tinggi ({$latencyMs} ms). Periksa beban MySQL.";
+            $issues[] = "Latensi query tinggi ({$latencyMs} ms). Periksa beban database.";
             if ($status === 'healthy') {
                 $status = 'degraded';
             }
