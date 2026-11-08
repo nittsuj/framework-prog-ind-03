@@ -1,65 +1,48 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('adminlte::page')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                    <p class="mt-1 text-sm text-gray-500">
-                        Menampilkan {{ $projects->count() }} project milik {{ auth()->user()->email }}.
-                    </p>
-                </div>
-            </div>
+@section('title', 'Dashboard Akademik')
 
-            {{-- Agentic AI: Database Health Monitor --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="font-semibold text-lg text-gray-800">Agent Monitoring Database Health</h3>
-                    <p class="text-sm text-gray-500">
-                        Status: <span class="font-semibold">{{ strtoupper($dbHealth['status']) }}</span>
-                        · {{ $dbHealth['database'] }} ({{ $dbHealth['driver'] }})
-                        · {{ $dbHealth['latency_ms'] }} ms
-                        · dicek {{ $dbHealth['checked_at'] }}
-                    </p>
-                    <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                        <div class="p-3 bg-gray-50 rounded">Users: <strong>{{ $dbHealth['counts']['users'] }}</strong></div>
-                        <div class="p-3 bg-gray-50 rounded">Projects: <strong>{{ $dbHealth['counts']['projects'] }}</strong></div>
-                        <div class="p-3 bg-gray-50 rounded">Orphaned: <strong>{{ $dbHealth['counts']['orphaned_projects'] }}</strong></div>
-                        <div class="p-3 bg-gray-50 rounded">Demo: <strong>{{ $dbHealth['demo_account_present'] ? 'OK' : 'Missing' }}</strong></div>
-                    </div>
-                    <ul class="mt-3 text-sm text-gray-600 list-disc list-inside">
-                        @foreach ($dbHealth['recommendations'] as $rec)
-                            <li>{{ $rec }}</li>
-                        @endforeach
-                    </ul>
-                    <a href="{{ route('dashboard.health') }}" class="mt-2 inline-block text-sm text-indigo-600 underline">Lihat JSON health</a>
-                </div>
-            </div>
+@section('content_header')
+    <h1>Dashboard Akademik</h1>
+@stop
 
-            {{-- Daftar project milik user login --}}
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="font-semibold text-lg text-gray-800">Project Saya</h3>
+@section('content')
+    @if (session('status'))
+        <div class="alert alert-success">{{ session('status') }}</div>
+    @endif
+
+    <div class="row">
+        <div class="col-lg-4 col-12"><div class="small-box bg-info"><div class="inner"><h3>{{ number_format($stats['users']) }}</h3><p>Total Pengguna</p></div><div class="icon"><i class="fas fa-users"></i></div></div></div>
+        <div class="col-lg-4 col-12"><div class="small-box bg-success"><div class="inner"><h3>{{ number_format($stats['projects']) }}</h3><p>Total Data Proyek</p></div><div class="icon"><i class="fas fa-folder-open"></i></div></div></div>
+        <div class="col-lg-4 col-12"><div class="small-box bg-warning"><div class="inner"><h3>{{ number_format($stats['themes']) }}</h3><p>Tema Agent</p></div><div class="icon"><i class="fas fa-layer-group"></i></div></div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h3 class="card-title">Data Proyek</h3></div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.dashboard') }}" class="form-inline mb-3">
+                <input class="form-control mr-2" type="search" name="q" value="{{ $keyword }}" placeholder="Cari judul, tema, atau pemilik">
+                <button class="btn btn-primary" type="submit">Cari</button>
+                @if ($keyword)<a class="btn btn-default ml-2" href="{{ route('admin.dashboard') }}">Reset</a>@endif
+            </form>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead><tr><th>Judul</th><th>Pemilik</th><th>Tema Agent</th><th>Dibuat</th>@if (auth()->user()->hasRole('Admin'))<th>Aksi</th>@endif</tr></thead>
+                    <tbody>
                     @forelse ($projects as $project)
-                        <div class="mt-4 p-4 border rounded-lg">
-                            <div class="font-semibold">{{ $project->judul }}</div>
-                            <div class="text-sm text-gray-500">
-                                Tema: {{ $project->tema_agent }} · {{ $project->created_at?->diffForHumans() }}
-                            </div>
-                            @if ($project->deskripsi)
-                                <p class="mt-2 text-sm text-gray-700">{{ $project->deskripsi }}</p>
+                        <tr>
+                            <td>{{ $project->judul }}</td><td>{{ $project->user->name }}</td><td>{{ $project->tema_agent }}</td><td>{{ $project->created_at?->format('d M Y') }}</td>
+                            @if (auth()->user()->hasRole('Admin'))
+                                <td><form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Hapus data proyek ini?')">@csrf @method('DELETE')<button class="btn btn-danger btn-sm" type="submit"><i class="fas fa-trash"></i> Hapus Data</button></form></td>
                             @endif
-                        </div>
+                        </tr>
                     @empty
-                        <p class="mt-2 text-sm text-gray-500">Belum ada project.</p>
+                        <tr><td colspan="5" class="text-center">Tidak ada data proyek yang cocok.</td></tr>
                     @endforelse
-                </div>
+                    </tbody>
+                </table>
             </div>
+            {{ $projects->links() }}
         </div>
     </div>
-</x-app-layout>
+@stop
