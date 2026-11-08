@@ -4,6 +4,9 @@ services:
       context: .
     ports:
       - "8000:80"
+    environment:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/lib/portal/academic.sqlite
     volumes:
       - portal-data:/var/lib/portal
     restart: unless-stopped
