@@ -44,4 +44,8 @@
             </x-primary-button>
         </div>
     </form>
+
+    <p class="mt-6 border-t pt-4 text-sm text-gray-600">
+        Admin? <a class="underline text-indigo-600 hover:text-indigo-900" href="{{ route('admin.login') }}">Login melalui halaman Admin</a>
+    </p>
 </x-guest-layout>
