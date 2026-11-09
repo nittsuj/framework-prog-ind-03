@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\AdminSessionController;
+use App\Http\Controllers\Auth\DemoLoginController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -25,6 +26,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('admin/login', [AdminSessionController::class, 'create'])->name('admin.login');
     Route::post('admin/login', [AdminSessionController::class, 'store'])->name('admin.login.store');
+
+    Route::post('demo-login/{role}', [DemoLoginController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->whereIn('role', ['admin', 'staf'])
+        ->name('demo.login');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

@@ -26,4 +26,17 @@
             <x-primary-button>{{ __('Log in as Admin') }}</x-primary-button>
         </div>
     </form>
+    @if (config('app.demo_login'))
+        <div class="mt-6 border-t pt-4">
+            <p class="mb-2 text-sm font-medium text-gray-700">Login instan akun demo</p>
+            <div class="flex gap-2">
+                <form method="POST" action="{{ route('demo.login', 'admin') }}">@csrf
+                    <button type="submit" class="rounded-md bg-red-600 px-3 py-2 text-xs font-semibold uppercase text-white hover:bg-red-700">Login sebagai Admin</button>
+                </form>
+                <form method="POST" action="{{ route('demo.login', 'staf') }}">@csrf
+                    <button type="submit" class="rounded-md bg-gray-700 px-3 py-2 text-xs font-semibold uppercase text-white hover:bg-gray-800">Login sebagai Staf</button>
+                </form>
+            </div>
+        </div>
+    @endif
 </x-guest-layout>

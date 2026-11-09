@@ -48,4 +48,17 @@
     <p class="mt-6 border-t pt-4 text-sm text-gray-600">
         Admin? <a class="underline text-indigo-600 hover:text-indigo-900" href="{{ route('admin.login') }}">Login melalui halaman Admin</a>
     </p>
+    @if (config('app.demo_login'))
+        <div class="mt-6 border-t pt-4">
+            <p class="mb-2 text-sm font-medium text-gray-700">Login instan akun demo</p>
+            <div class="flex gap-2">
+                <form method="POST" action="{{ route('demo.login', 'admin') }}">@csrf
+                    <button type="submit" class="rounded-md bg-red-600 px-3 py-2 text-xs font-semibold uppercase text-white hover:bg-red-700">Login sebagai Admin</button>
+                </form>
+                <form method="POST" action="{{ route('demo.login', 'staf') }}">@csrf
+                    <button type="submit" class="rounded-md bg-gray-700 px-3 py-2 text-xs font-semibold uppercase text-white hover:bg-gray-800">Login sebagai Staf</button>
+                </form>
+            </div>
+        </div>
+    @endif
 </x-guest-layout>

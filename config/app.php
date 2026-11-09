@@ -28,6 +28,9 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    // Tombol login instan akun demo (hanya untuk evaluasi dosen/asdos).
+    'demo_login' => (bool) env('DEMO_LOGIN', env('APP_ENV', 'production') === 'local'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
